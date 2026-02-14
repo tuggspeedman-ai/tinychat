@@ -1,0 +1,29 @@
+# Model checkpoints (multi-GB .pt files)
+checkpoints/
+
+# API keys and secrets
+openroutertoken.txt
+*.secret
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.venv/
+
+# Node / Next.js
+web/node_modules/
+web/.next/
+web/.vercel/
+web/.env*.local
+
+# Personal notes and planning docs
+TinyBrain-About-Jonathan.md
+TinyChat - Nanochat Project and Learnings.md
+nanochat/nanochat_project_plan_phase2.md
+nanochat/nanochat_project_plan.md
+
+# OS
+.DS_Store
