@@ -94,7 +94,7 @@ export default function ChatInput({ onSend, onStop, disabled }: ChatInputProps) 
           )}
         </div>
         <p className="mt-2 text-center text-xs text-zinc-600">
-          TinyChat is a 561M parameter model. It will confidently hallucinate — that&apos;s the fun part.
+          A portfolio demo by Jonathan Avni. TinyChat is a 561M parameter model trained from scratch - it will confidently hallucinate. That&apos;s part of the fun :)
         </p>
       </div>
     </div>
