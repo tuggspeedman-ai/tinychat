@@ -160,7 +160,16 @@ def chat_completions(request: ChatRequest, x_api_key: Annotated[str | None, Head
     output_start = tokenizer.encode_special("<|output_start|>")
     output_end = tokenizer.encode_special("<|output_end|>")
 
+    # Identity priming: short synthetic exchange so the model remembers who it is
+    identity = "I am TinyChat, a 561M parameter language model trained from scratch by Jonathan Avni."
     conversation_tokens = [bos]
+    conversation_tokens.append(user_start)
+    conversation_tokens.extend(tokenizer.encode("Who are you?"))
+    conversation_tokens.append(user_end)
+    conversation_tokens.append(assistant_start)
+    conversation_tokens.extend(tokenizer.encode(identity))
+    conversation_tokens.append(assistant_end)
+
     for message in messages:
         role = message.get("role", "user")
         content = message.get("content", "")
