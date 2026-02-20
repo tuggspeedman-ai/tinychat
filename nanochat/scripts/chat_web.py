@@ -278,6 +278,7 @@ async def generate_stream(
     accumulated_tokens = []
     # Track the last complete UTF-8 string (without replacement characters)
     last_clean_text = ""
+    first_token = True
 
     with worker.autocast_ctx:
         for token_column, token_masks in worker.engine.generate(
@@ -289,6 +290,13 @@ async def generate_stream(
             seed=random.randint(0, 2**31 - 1)
         ):
             token = token_column[0]
+
+            # Emit perplexity as the very first SSE event (computed during prefill)
+            if first_token:
+                perplexity = worker.engine.last_perplexity
+                if perplexity is not None:
+                    yield f"data: {json.dumps({'perplexity': round(perplexity, 2)})}\n\n"
+                first_token = False
 
             # Stopping criteria
             if token == assistant_end or token == bos:

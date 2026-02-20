@@ -189,6 +189,7 @@ class Engine:
     def __init__(self, model, tokenizer):
         self.model = model
         self.tokenizer = tokenizer # needed for tool use
+        self.last_perplexity = None # computed during prefill, read by caller
 
     @torch.inference_mode()
     def generate(self, tokens, num_samples=1, max_tokens=None, temperature=1.0, top_k=None, seed=42):
@@ -217,6 +218,15 @@ class Engine:
         )
         ids = torch.tensor([tokens], dtype=torch.long, device=device)
         logits = self.model.forward(ids, kv_cache=kv_cache_prefill)
+        # Compute perplexity from full logits before discarding to last position
+        # logits shape: (1, seq_len, vocab_size) — shift by 1 for next-token prediction
+        if logits.size(1) > 1:
+            shift_logits = logits[:, :-1, :].contiguous().view(-1, logits.size(-1))
+            shift_labels = ids[:, 1:].contiguous().view(-1)
+            loss = F.cross_entropy(shift_logits, shift_labels)
+            self.last_perplexity = torch.exp(loss).item()
+        else:
+            self.last_perplexity = None
         logits = logits[:, -1, :]
         next_ids = sample_next_token(logits, rng, temperature, top_k)  # (B, 1)
         sampled_tokens = next_ids[:, 0].tolist()

@@ -198,6 +198,7 @@ def chat_completions(request: ChatRequest, x_api_key: Annotated[str | None, Head
         accumulated_tokens = []
         last_clean_text = ""
         in_python = False  # inside <|python_start|>...<|python_end|> (calculator expression)
+        first_token = True
 
         with torch.amp.autocast(device_type="cuda", dtype=torch.bfloat16):
             for token_column, token_masks in engine.generate(
@@ -209,6 +210,13 @@ def chat_completions(request: ChatRequest, x_api_key: Annotated[str | None, Head
                 seed=random.randint(0, 2**31 - 1)
             ):
                 token = token_column[0]
+
+                # Emit perplexity as the very first SSE event (computed during prefill)
+                if first_token:
+                    perplexity = engine.last_perplexity
+                    if perplexity is not None:
+                        yield f"data: {json.dumps({'perplexity': round(perplexity, 2)})}\n\n"
+                    first_token = False
 
                 # Stopping criteria
                 if token == assistant_end or token == bos:
