@@ -119,12 +119,16 @@ export default function Home() {
     }
   };
 
-  const handleClear = () => {
+  const handleStop = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-    setMessages([]);
     setIsStreaming(false);
+  };
+
+  const handleClear = () => {
+    handleStop();
+    setMessages([]);
   };
 
   const isEmpty = messages.length === 0;
@@ -179,7 +183,7 @@ export default function Home() {
         )}
       </main>
 
-      <ChatInput onSend={handleSend} disabled={isStreaming} />
+      <ChatInput onSend={handleSend} onStop={handleStop} disabled={isStreaming} />
     </div>
   );
 }

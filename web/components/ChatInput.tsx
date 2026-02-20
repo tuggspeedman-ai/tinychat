@@ -2,10 +2,11 @@ import { useState, useRef, useEffect } from "react";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
+  onStop?: () => void;
   disabled?: boolean;
 }
 
-export default function ChatInput({ onSend, disabled }: ChatInputProps) {
+export default function ChatInput({ onSend, onStop, disabled }: ChatInputProps) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -56,25 +57,41 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             rows={1}
             className="flex-1 resize-none bg-transparent text-[15px] text-zinc-100 placeholder-zinc-500 focus:outline-none disabled:opacity-50 max-h-[200px]"
           />
-          <button
-            onClick={handleSubmit}
-            disabled={disabled || !input.trim()}
-            className="flex-shrink-0 rounded-lg p-1.5 transition-all disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white hover:bg-gradient-to-br hover:from-cyan-500 hover:to-blue-500 disabled:hover:text-zinc-400"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {disabled && onStop ? (
+            <button
+              onClick={onStop}
+              className="flex-shrink-0 rounded-lg p-1.5 transition-all text-zinc-400 hover:text-white hover:bg-zinc-700"
             >
-              <path d="M22 2L11 13" />
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-            </svg>
-          </button>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={disabled || !input.trim()}
+              className="flex-shrink-0 rounded-lg p-1.5 transition-all disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white hover:bg-gradient-to-br hover:from-cyan-500 hover:to-blue-500 disabled:hover:text-zinc-400"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 2L11 13" />
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+              </svg>
+            </button>
+          )}
         </div>
         <p className="mt-2 text-center text-xs text-zinc-600">
           TinyChat is a 561M parameter model. It will confidently hallucinate — that&apos;s the fun part.

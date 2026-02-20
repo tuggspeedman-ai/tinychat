@@ -63,3 +63,13 @@ body {
 .message-appear {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* Thinking dots */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.thinking-dot {
+  animation: pulse-dot 1s ease-in-out infinite;
+}
